@@ -102,7 +102,6 @@
 #define VOLTAGE_MIN 1320 //33V
 #define SYSTEM_VOLTAGE 52// in V
 #define MAX_VOLTAGE 59// in V
-#define PAS_DIRECTION 1 //1 - reverse, 0 - normal
 
 //---------------------------------------------------------------------
 //torquesensor settings
@@ -125,5 +124,5 @@
 
 //---------------------------------------------------------------------
 #define AUTODETECT 0
-#define version "EBiCS_Neutrino_0.009"
+#define version "EBiCS_Neutrino_0.010"
 #endif /* CONFIG_H_ */

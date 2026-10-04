@@ -69,6 +69,7 @@ FlagStatus start_flag2=0;
 FlagStatus start_flag3=0;
 FlagStatus start_running=0;
 uint16_t auto_off_counter=0;
+uint16_t test_run_counter=0;
 uint16_t down_button_counter=0;
 
 void nvic_config(void);
@@ -353,8 +354,7 @@ int main(void)
 	MP.MagicNumber=202;
 	MP.Override_Duration=8000;
 	MP.decay_base=16;
-	MP.pas_direction=PAS_DIRECTION;
-
+	MP.pas_direction=0;
 
 	//init PI structs
 	PI_id.gain_i=I_FACTOR_I_D;
@@ -1213,7 +1213,7 @@ void PAS_processing(void)
 
 		PAS_flag = 0;
 		backward_pin=gpio_input_bit_get(GPIOC,GPIO_PIN_10);
-		if(PAS_DIRECTION){
+		if(MP.pas_direction){
 			if(backward_pin){
 				if(Backwards_counter<14)
 					Backwards_counter++;
@@ -1278,6 +1278,7 @@ void reg_ADC_processing(void)
 			case 3: MS.calories=map_exp(adc_value[1], MP.throttle_offset, MP.throttle_max, 0, 1000);break;
 			case 4: MS.calories=(uint16_t)MS.i_q_setpoint_temp;
 	}
+	//MS.calories=MP.freerun_flag;
 	//MS.calories=iabs(MS.Battery_Current);
 	//MS.calories=iabs(torque_offset_correction);
 	//MS.calories=(uint16_t)MS.i_q_setpoint_temp;
@@ -1924,12 +1925,14 @@ uint16_t update_setpoint(void){
 						if(MS.Speedx100<500) start_flag=1;
 
 						//freerun for fixed clutch
-						start_current=30+(int16_t)(start_current_mult/120);
-						if(MS.i_q_setpoint_temp>50) start_flag3=1;
-						if(MS.i_q_setpoint_temp<start_current && start_flag3 && MS.Speedx100>500){
-							if(rotor_speed>3000 && start_current_mult>-3000 && mapped_throttle==0) start_current_mult--;
-							if(rotor_speed<2500 && start_current_mult<3000 && mapped_throttle==0) start_current_mult++;
-							MS.i_q_setpoint_temp=start_current;
+						if(MP.freerun_flag){
+							start_current=30+(int16_t)(start_current_mult/120);
+							if(MS.i_q_setpoint_temp>50) start_flag3=1;
+							if(MS.i_q_setpoint_temp<start_current && start_flag3 && MS.Speedx100>500){
+								if(rotor_speed>3000 && start_current_mult>-3000 && mapped_throttle==0) start_current_mult--;
+								if(rotor_speed<2500 && start_current_mult<3000 && mapped_throttle==0) start_current_mult++;
+								MS.i_q_setpoint_temp=start_current;
+							}
 						}
 
 						//torque override
@@ -1988,7 +1991,7 @@ uint16_t update_setpoint(void){
 
 				}//end legalflag
 				if(MS.hall_angle_detect_flag>1){ // part 2 of positions calibration
-					MS.i_q_setpoint_temp=200;
+					MS.i_q_setpoint_temp=100;
 					temp6-=temp6>>4;
 					temp6+=MS.u_d;
 					if (p>30){

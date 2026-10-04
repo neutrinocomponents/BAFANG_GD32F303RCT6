@@ -14,6 +14,8 @@ void parse_DPparams(MotorParams_t* MP){
 	MP->system_voltage = Para1[0];
 	MP->battery_current_max=Para1[1]*1000;
 	MP->max_voltage = Para1[2];
+	MP->pas_direction=Para1[5];//Undervoltage Recovery field
+	MP->freerun_flag=Para1[10]; //Limp Mode SoC Limit field
 	MP->phase_current_max=Para1[9]*1000/CAL_I; //uses field Max Current on Low Charge
 	MP->gear_ratio=Para1[19];
 	MP->MagicNumber=Para1[24]+(Para1[25]<<8);
@@ -25,7 +27,6 @@ void parse_DPparams(MotorParams_t* MP){
 	MP->legalflag=Para1[14];
 	if (!Para1[18])MP->reverse=-1;
 	else MP->reverse=1;
-	MP->pas_direction==Para1[5];//Undervoltage Recovery field
 	MP->pulses_per_revolution=Para1[20];
 	MP->decay_base=Para1[21];
 	MP->Override_Duration=Para1[37]*40;
@@ -66,7 +67,9 @@ void parse_MOparams(MotorParams_t* MP){
 	Para1[2] = MP->max_voltage;
 	Para1[3] = (MP->voltage_min*CAL_BAT_V)&0xFF;
 	Para1[4] = ((MP->voltage_min*CAL_BAT_V)>>8)&0xFF;
+	Para1[5]= MP->pas_direction;
 	Para1[9]= (MP->phase_current_max*CAL_I/1000);
+	Para1[10]= MP->freerun_flag;
 	Para1[12]= MP->Cadence_exponent;
 	Para1[14]= MP->legalflag;
 	if (MP->reverse==-1)Para1[18]=0;
@@ -110,6 +113,8 @@ void parse_MOparams(MotorParams_t* MP){
 void InitEEPROM(MotorParams_t* MP){
 	MP->TS_coeff=TS_COEF;
 	MP->MagicNumber=202;
+	MP->pas_direction=0;
+	MP->freerun_flag=0;
 	MP->battery_current_max=BATTERYCURRENT_MAX;
 	MP->gear_ratio=GEAR_RATIO;
 	MP->throttle_offset=THROTTLE_OFFSET; 

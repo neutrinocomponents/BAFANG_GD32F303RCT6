@@ -150,6 +150,7 @@ typedef struct
 	uint8_t 		ext_boost_strength[6];
 
 	uint8_t 		pas_direction; //Undervoltage Recovery field
+	uint8_t			freerun_flag; //Limp Mode SoC Limit field
 
 }MotorParams_t;
 
