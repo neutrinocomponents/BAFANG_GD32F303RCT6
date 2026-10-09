@@ -449,11 +449,11 @@ int main(void)
         	offroadcode+=pow(10,MS.offroadtics)*MS.assist_level;
         	MS.offroadtics++;
 
-        	/*if(offroadcode==MP.MagicNumber){
+        	if(offroadcode==MP.MagicNumber){
         		MS.offroadflag=!MS.offroadflag;
-        		if(MS.offroadflag)MS.offroadtics=9;
-        		else MS.offroadtics=8;
-        	}*/
+        		if(MS.offroadflag)MS.offroadtics=90;
+        		else MS.offroadtics=80;
+        	}
         	if(offroadcode==2424){
         	      display_cal++;
         	      if(display_cal>4)display_cal=0;
@@ -1278,7 +1278,7 @@ void reg_ADC_processing(void)
 			case 3: MS.calories=map_exp(adc_value[1], MP.throttle_offset, MP.throttle_max, 0, 1000);break;
 			case 4: MS.calories=(uint16_t)MS.i_q_setpoint_temp;
 	}
-	//MS.calories=MP.freerun_flag;
+	//MS.calories=offroadcode;
 	//MS.calories=iabs(MS.Battery_Current);
 	//MS.calories=iabs(torque_offset_correction);
 	//MS.calories=(uint16_t)MS.i_q_setpoint_temp;
@@ -1697,7 +1697,7 @@ int16_t T_NTC(uint16_t ADC) // ADC 12 Bit, 10k NTC, RÃ¼ckgabewert in Â°C
 
 int8_t calculate_SOC(uint16_t voltage, uint8_t cells_in_series){ //interpolate from lookup table
 	float voltages[] = {2.5,	2.7, 	2.9,	3,		3.1,	3.2,	3.3,	3.4,	3.5,	3.6,	3.7,	3.8,	3.9,	4,		4.08,	4.12,	4.15,	4.2};
-	float soc_values[] = {0,	2,		5, 		8,		12,		16,		20,		25,		30,		36,		42,		49,		57,		67,		79,		90,		97,		100};
+	float soc_values[] = {0,	2,		7, 		11,		15,		20,		25,		30,		35,		41,		47,		54,		61,		70,		81,		90,		97,		100};
     int length = sizeof(voltages) / sizeof(voltages[0]);
     float cell_voltage = (float)voltage/((float)cells_in_series*1000);
     if (cell_voltage <= voltages[0]) {
@@ -1909,7 +1909,7 @@ uint16_t update_setpoint(void){
 	            else if(MS.assist_level!=1){
 					mapped_torque= map(MS.torque_on_crank, MP.TQO_threshold[level_to_array_element[MS.assist_level]], 3300, 0, phase_current_max_scaled);
 					mapped_torque2=map(MS.torque_on_crank, 1000, 3300, 0, 300);
-					if(MS.assist_level==2 && MS.Speedx100<700)
+					if(MS.assist_level==2)
 						mapped_throttle= map_exp(adc_value[1], MP.throttle_offset, MP.throttle_max, 0, 300);
 					else
 						mapped_throttle= map_exp(adc_value[1], MP.throttle_offset, MP.throttle_max, 0, phase_current_max_scaled);

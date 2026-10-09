@@ -124,5 +124,5 @@
 
 //---------------------------------------------------------------------
 #define AUTODETECT 0
-#define version "EBiCS_Neutrino_0.010"
+#define version "EBiCS_Neutrino_0.011"
 #endif /* CONFIG_H_ */
